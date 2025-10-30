@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Member anloc.id</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; max-width: 600px; }
+        form div { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:disabled { background-color: #ccc; }
+        #message { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Formulir Pendaftaran Member anloc.id</h1>
+    <p>Silakan isi data di bawah ini dengan lengkap.</p>
+
+    <form id="member-form">
+        <div>
+            <label for="email-address">Email</label>
+            <input type="email" id="email-address" name="email-address" required>
+        </div>
+        <div>
+            <label for="nama-lengkap">Nama Lengkap</label>
+            <input type="text" id="nama-lengkap" name="nama-lengkap" required>
+        </div>
+        <div>
+            <label for="nama-panggilan">Nama Panggilan</label>
+            <input type="text" id="nama-panggilan" name="nama-panggilan">
+        </div>
+        <div>
+            <label for="tempat--tgl-lahir">Tempat & Tgl. Lahir</label>
+            <input type="text" id="tempat--tgl-lahir" name="tempat--tgl-lahir">
+        </div>
+        <div>
+            <label for="alamat">Alamat</label>
+            <textarea id="alamat" name="alamat" rows="3"></textarea>
+        </div>
+        <div>
+            <label for="no-telp">No. Telp / WA</label>
+            <input type="tel" id="no-telp" name="no-telp">
+        </div>
+        
+        <h3>Data Kendaraan</h3>
+        <div>
+            <label for="jenis-mobil">Jenis Mobil</label>
+            <input type="text" id="jenis-mobil" name="jenis-mobil">
+        </div>
+        <div>
+            <label for="tahun">Tahun</label>
+            <input type="number" id="tahun" name="tahun" min="1900" max="2099">
+        </div>
+        <div>
+            <label for="warna-mobil">Warna Mobil</label>
+            <input type="text" id="warna-mobil" name="warna-mobil">
+        </div>
+        <div>
+            <label for="plat-nomor-mobil">Plat Nomor</label>
+            <input type="text" id="plat-nomor-mobil" name="plat-nomor-mobil">
+        </div>
+
+        <h3>Lain-lain</h3>
+        <div>
+            <label for="ukuran-kemeja">Ukuran Kemeja</label>
+            <select id="ukuran-kemeja" name="ukuran-kemeja">
+                <option value="">-- Pilih Ukuran --</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+        </div>
+        <div>
+            <label for="alasan-bergabung">Alasan Bergabung</label>
+            <textarea id="alasan-bergabung" name="alasan-bergabung" rows="3"></textarea>
+        </div>
+
+        <button type="submit" id="submit-button">Daftar Sekarang</button>
+    </form>
+    
+    <div id="message"></div>
+    <a href="/">Kembali ke Utama</a>
+
+    <script>
+        const form = document.getElementById('member-form');
+        const submitButton = document.getElementById('submit-button');
+        const messageDiv = document.getElementById('message');
+        
+        // GANTI DENGAN URL ANDA
+        const API_URL = "https://script.google.com/macros/s/AKfycby-iEOyFlUy5sfFuDbDHwxQHbFK3wdQA3DcyJrE_rWgXp0_gny45bDXyJhbyV78uqv7/exec"; 
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Mencegah form submit secara normal
+            
+            // Tampilkan status loading
+            submitButton.disabled = true;
+            submitButton.textContent = "Mengirim...";
+            messageDiv.textContent = "";
+
+            try {
+                // 1. Kumpulkan data dari form
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                // 2. Kirim data sebagai JSON ke API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors', // Diperlukan untuk CORS
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // 3. Tangani respons
+                const result = await response.json();
+
+                if (result.success) {
+                    messageDiv.textContent = "Pendaftaran berhasil! Terima kasih.";
+                    messageDiv.style.color = "green";
+                    form.reset(); // Kosongkan form
+                } else {
+                    throw new Error(result.message || "Terjadi kesalahan.");
+                }
+
+            } catch (error) {
+                messageDiv.textContent = "Error: " + error.message;
+                messageDiv.style.color = "red";
+            } finally {
+                // Kembalikan tombol ke status normal
+                submitButton.disabled = false;
+                submitButton.textContent = "Daftar Sekarang";
+            }
+        });
+    </script>
+</body>
+</html>

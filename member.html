@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Member anloc.id</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        #loading { font-weight: bold; }
+        .table-container { overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Daftar Member anloc.id</h1>
+    <a href="/">Kembali ke Utama</a>
+    
+    <div id="loading">Memuat data member...</div>
+    
+    <div class="table-container">
+        <table id="member-table" style="display:none;">
+            <thead>
+                <tr id="table-header">
+                    </tr>
+            </thead>
+            <tbody id="table-body">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // GANTI DENGAN URL ANDA
+        const API_URL = "https://script.google.com/macros/s/AKfycby-iEOyFlUy5sfFuDbDHwxQHbFK3wdQA3DcyJrE_rWgXp0_gny45bDXyJhbyV78uqv7/exec";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadingDiv = document.getElementById('loading');
+            const table = document.getElementById('member-table');
+            const tableHeader = document.getElementById('table-header');
+            const tableBody = document.getElementById('table-body');
+
+            try {
+                // 1. Ambil data dari API
+                const response = await fetch(API_URL);
+                const result = await response.json();
+
+                if (!result.success || !result.data || result.data.length === 0) {
+                    loadingDiv.textContent = "Belum ada data member terdaftar.";
+                    return;
+                }
+
+                const members = result.data;
+                
+                // 2. Buat Header Tabel (berdasarkan data pertama)
+                const headers = Object.keys(members[0]);
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    tableHeader.appendChild(th);
+                });
+
+                // 3. Isi Body Tabel
+                members.forEach(member => {
+                    const tr = document.createElement('tr');
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        
+                        // Format tanggal agar lebih mudah dibaca
+                        if (header === 'date' && member[header]) {
+                            td.textContent = new Date(member[header]).toLocaleString('id-ID');
+                        } else {
+                            td.textContent = member[header];
+                        }
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+
+                // 4. Tampilkan tabel
+                loadingDiv.style.display = "none";
+                table.style.display = "table";
+
+            } catch (error) {
+                loadingDiv.textContent = "Gagal memuat data: " + error.message;
+                loadingDiv.style.color = "red";
+            }
+        });
+    </script>
+</body>
+</html>
